@@ -15,6 +15,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sourcey.materiallogindemo.utility.PrefManager;
+
 import butterknife.ButterKnife;
 import butterknife.Bind;
 
@@ -22,7 +24,8 @@ import butterknife.Bind;
 public class SignupActivity extends AppCompatActivity  implements
         AdapterView.OnItemSelectedListener {
     private static final String TAG = "SignupActivity";
-    String[] userType = { "","Merchant", "Lorry Owner", "Agent"};
+    int sessionId=191;
+    String[] userType = { "None","Merchant", "Lorry Owner", "Agent"};
 
     @Bind(R.id.input_name) EditText _nameText;
     @Bind(R.id.input_phoneSignUp) EditText _mobileText;
@@ -100,14 +103,19 @@ public class SignupActivity extends AppCompatActivity  implements
 
 
     public void onSignupSuccess() {
+        PrefManager prefManager = new PrefManager(this);
+        prefManager.setLoggedIn(sessionId);
         _signupButton.setEnabled(false);
         setResult(RESULT_OK, null);
-        finish();
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+
     }
 
     public void onSignupFailed() {
         Toast.makeText(getBaseContext(), "Sign Up failed", Toast.LENGTH_LONG).show();
-
         _signupButton.setEnabled(true);
     }
 
@@ -143,12 +151,13 @@ public class SignupActivity extends AppCompatActivity  implements
 
         if (reEnterPassword.isEmpty() || reEnterPassword.length() < 4 || reEnterPassword.length() > 10 || !(reEnterPassword.equals(password))) {
             _reEnterPasswordText.setError("Password Do not match");
+            //_reEnterPasswordText.setError(Html.fromHtml("<font color='green'>Password Do not match</font>"));
             valid = false;
         } else {
             _reEnterPasswordText.setError(null);
         }
 
-        if (userType.isEmpty() || userType.length() == 0) {
+        if (userType.isEmpty() || userType.length() == 0 || userType.equals("None")) {
             valid = false;
             TextView errorText = (TextView)_userType.getSelectedView();
             errorText.setError("");
@@ -170,4 +179,6 @@ public class SignupActivity extends AppCompatActivity  implements
     public void onNothingSelected(AdapterView<?> parent) {
 
     }
+
+
 }

@@ -13,12 +13,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sourcey.materiallogindemo.utility.PrefManager;
+
 import butterknife.ButterKnife;
 import butterknife.Bind;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
+    int sessionId=191;
 
     @Bind(R.id.input_phone) EditText _phoneText;
     @Bind(R.id.input_password) EditText _passwordText;
@@ -46,8 +49,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Start the Signup activity
                 Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
-                startActivityForResult(intent, REQUEST_SIGNUP);
-                finish();
+                startActivity(intent);
                 overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
         });
@@ -95,19 +97,6 @@ public class LoginActivity extends AppCompatActivity {
                 }, 3000);
     }
 
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_SIGNUP) {
-            if (resultCode == RESULT_OK) {
-
-                // TODO: Implement successful signup logic here
-                // By default we just finish the Activity and log them in automatically
-                this.finish();
-            }
-        }
-    }
-
     @Override
     public void onBackPressed() {
         // Disable going back to the MainActivity
@@ -115,8 +104,11 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onLoginSuccess() {
-        _loginButton.setEnabled(true);
+        PrefManager prefManager = new PrefManager(this);
+        prefManager.setLoggedIn(sessionId);
+        _loginButton.setEnabled(false);
         finish();
+        overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);
     }
 
     public void onLoginFailed() {

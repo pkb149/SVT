@@ -37,6 +37,24 @@
 
 
         <!-- mobile number -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:editable="false"
+                android:text="+91" />
+        </android.support.design.widget.TextInputLayout>
+
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -46,8 +64,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="phone"
+                android:maxLength="10"
                 android:hint="Mobile Number" />
         </android.support.design.widget.TextInputLayout>
+        </LinearLayout>
 
         <!-- Password Label -->
         <android.support.design.widget.TextInputLayout
@@ -75,20 +95,29 @@
                 android:hint="Re-enter Password"/>
         </android.support.design.widget.TextInputLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="User Type"
+            android:text="User Type : "
             android:textSize="16dip"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"/>
+            android:layout_weight="3"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="16dp"/>
 
         <Spinner
             android:id="@+id/spinner_userType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="20dp"
+            android:layout_weight="2"
+            android:popupBackground="@color/primary_dark"
             android:layout_marginBottom="16dp"/>
+        </LinearLayout>
 
 
         <!-- Signup Button -->

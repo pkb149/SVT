@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal">
+
+                    <NumberPicker
+                        android:id="@+id/month_picker"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:width="100dip"
+                        android:descendantFocusability="blocksDescendants" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="     " />
+
+                    <NumberPicker
+                        android:id="@+id/date_picker"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:width="100dip"
+                        android:descendantFocusability="blocksDescendants" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="     " />
+
+                    <NumberPicker
+                        android:id="@+id/year_picker"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:width="100dip"
+                        android:descendantFocusability="blocksDescendants" />
+
+                </LinearLayout>
+
+                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:orientation="horizontal">
+
+                    <NumberPicker
+                        android:id="@+id/hour_picker"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:width="100dip"
+                        android:descendantFocusability="blocksDescendants" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="  :  "
+                        android:textColor="@color/black"
+                        android:layout_gravity="center_vertical"/>
+
+                    <NumberPicker
+                        android:id="@+id/min_picker"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:width="100dip"
+                        android:descendantFocusability="blocksDescendants" />
+
+                    <!--<TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="    " />
+
+                    <NumberPicker
+                        android:id="@+id/ampm_picker"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:width="100dip"
+                        android:descendantFocusability="blocksDescendants" />-->
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingTop="20dp">
+
+                    <Button
+                        android:id="@+id/btn_cancel"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Cancel" />
+
+                    <Button
+                        android:id="@+id/btn_done"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Done" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
