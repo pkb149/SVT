@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="72dp"
             android:layout_marginBottom="24dp"
-            android:text="SVT"
+            android:text="Book A Truck"
             android:textSize="40dp"
             android:textStyle="bold"
             android:layout_gravity="center_horizontal" />

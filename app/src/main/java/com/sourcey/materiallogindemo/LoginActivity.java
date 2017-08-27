@@ -3,6 +3,7 @@ package com.sourcey.materiallogindemo;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.util.Log;
 
 import android.content.Intent;
@@ -131,7 +132,9 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
-            _passwordText.setError("between 4 and 10 alphanumeric characters");
+            //_passwordText.setError("between 4 and 10 alphanumeric characters");
+
+            _passwordText.setError(Html.fromHtml("<font color='green'>Password Do not match</font>"));
             valid = false;
         } else {
             _passwordText.setError(null);

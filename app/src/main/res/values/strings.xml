@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">SVT</string>
-
-    <string name="hello_world">Hello world!</string>
     <string name="action_logout">Logout</string>
+    <string name="google_android_map_api_key">AIzaSyD4HjtABQWXvEfTdV6gwfQIKARccscM7Gs</string>
 </resources>

@@ -1,13 +1,16 @@
 package com.sourcey.materiallogindemo;
 
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatButton;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,9 +23,20 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.sourcey.materiallogindemo.utility.PrefManager;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 import butterknife.Bind;
@@ -38,16 +52,17 @@ public class MainActivity extends ActionBarActivity implements
     @Bind(R.id.spinner_capacity) Spinner _capacity;
     @Bind(R.id.tv_pickTime) TextView _pickTime;
     @Bind(R.id.btn_search) Button _search;
+    Date parsedDate=null;
     String[] from = { "Hyderabad","Bangalore", "Vijayawada", "Chennai","Ananthapur","Kavali","Guntur","Delhi"};
     String[] monthString= new String[]{"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
-    String[] capacity = { "1 Ton","5 Ton", "10 Ton"};
+    String[] capacity = { "10 Ton","5 Ton", "1 Ton"};
     Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getSupportActionBar().setTitle("Book A Truck");
+        //getSupportActionBar().setTitle("Book A Truck");
         ButterKnife.bind(this);
         _from.setOnItemSelectedListener(this);
         _to.setOnItemSelectedListener(this);
@@ -66,7 +81,7 @@ public class MainActivity extends ActionBarActivity implements
         if (!prefManager.isLoggedIn()) {
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intent);
-            overridePendingTransition(R.anim.push_left_out,R.anim.push_left_in);
+            overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);
         }
 
         _search.setOnClickListener(new View.OnClickListener(){
@@ -74,6 +89,79 @@ public class MainActivity extends ActionBarActivity implements
             @Override
             public void onClick(View v) {
                 // validate the information and submit
+                if (!validate()) {
+                    return;
+                }
+
+
+                final ProgressDialog progressDialog = new ProgressDialog(MainActivity.this,
+                        R.style.AppTheme_Dark_Dialog);
+                progressDialog.setIndeterminate(true);
+                progressDialog.setMessage("Loading Details from Server...");
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
+                progressDialog.show();
+                AsyncHttpClient client = new AsyncHttpClient();
+                String url="http://maps.googleapis.com/maps/api/directions/json?origin="+from[_from.getSelectedItemPosition()]+"&destination="+from[_to.getSelectedItemPosition()]+"&sensor=false";
+                client.get(url, new JsonHttpResponseHandler() {
+
+                    @Override
+                    public void onStart() {
+                        // called before request is started
+                    }
+
+                    @Override
+                    public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
+                        Log.e("Response Body",response.toString());
+                        String distance="";
+                        String duration="";
+                        String distanceInMtr="";
+                        ArrayList<LatLng> listOfStep= new ArrayList<LatLng>();
+                        try {
+                            JSONObject legs= response.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0);
+                            distance=legs.getJSONObject("distance").getString("text");
+                            distanceInMtr=legs.getJSONObject("distance").getString("value");
+                            duration=legs.getJSONObject("duration").getString("text");
+                            JSONArray steps=legs.getJSONArray("steps");
+                            for (int i = 0; i < steps.length(); i++) {
+                                Double latitude=steps.getJSONObject(i).getJSONObject("start_location").getDouble("lat");
+                                Double longitude=steps.getJSONObject(i).getJSONObject("start_location").getDouble("lng");
+                                Log.e("latitude: ",latitude.toString());
+                                listOfStep.add(new LatLng(latitude,longitude));
+                            }
+                            Log.e("Response Distance",distance);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        progressDialog.dismiss();
+                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+                        Intent intent = new Intent(getApplicationContext(), ChooseTruck.class);
+                        intent.putExtra("steps",listOfStep);
+                        intent.putExtra("distance",distance);
+                        intent.putExtra("duration",duration);
+                        intent.putExtra("distanceInMtr",distanceInMtr);
+                        intent.putExtra("from",_from.getSelectedItemPosition());
+                        intent.putExtra("to",_to.getSelectedItemPosition());
+                        intent.putExtra("time",parsedDate);
+                        intent.putExtra("capacity",_capacity.getSelectedItem().toString());
+                        startActivity(intent);
+                        overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, Throwable throwable, JSONObject jsonObject) {
+                        super.onFailure(statusCode, headers, throwable, jsonObject);
+                        Toast.makeText(getApplicationContext(),"couldn't load data, Please try again",Toast.LENGTH_LONG).show();
+                        progressDialog.dismiss();
+                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+                        Log.e("TAG","OnFailure!",throwable);
+                    }
+
+                    @Override
+                    public void onRetry(int retryNo) {
+                        // called when request is retried
+                    }
+                });
+
             }
         });
 
@@ -117,6 +205,12 @@ public class MainActivity extends ActionBarActivity implements
                 datePicker.setMinValue(1);
                 datePicker.setMaxValue(daysInMonth);
                 datePicker.setValue(date);
+                datePicker.setFormatter(new NumberPicker.Formatter() {
+                    @Override
+                    public String format(int value) {
+                        return String.format("%02d",value);
+                    }
+                });
 
                 monthPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
                     @Override
@@ -138,16 +232,56 @@ public class MainActivity extends ActionBarActivity implements
                     }
                 });
 
+                datePicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                    @Override
+                    public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+
+                        if((oldVal==datePicker.getMaxValue())&&(newVal==datePicker.getMinValue())){
+                            monthPicker.setValue(monthPicker.getValue()+1);
+                        }
+                        if((oldVal==datePicker.getMinValue())&&(newVal==datePicker.getMaxValue())){
+                            monthPicker.setValue(monthPicker.getValue()-1);
+                        }
+                    }
+                });
+
                 //hour picker
                 final NumberPicker hourPicker = (NumberPicker) npView.findViewById(R.id.hour_picker);
                 hourPicker.setMaxValue(23);
                 hourPicker.setMinValue(0);
                 hourPicker.setValue(hour);
+                hourPicker.setFormatter(new NumberPicker.Formatter() {
+                    @Override
+                    public String format(int value) {
+                        return String.format("%02d",value);
+                    }
+                });
+
                 //minute picker
                 final NumberPicker minPicker = (NumberPicker) npView.findViewById(R.id.min_picker);
-                minPicker.setMaxValue(60);
+                minPicker.setMaxValue(59);
                 minPicker.setMinValue(0);
                 minPicker.setValue(min);
+
+                minPicker.setFormatter(new NumberPicker.Formatter() {
+                    @Override
+                    public String format(int value) {
+                        return String.format("%02d",value);
+                    }
+                });
+
+                minPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                    @Override
+                    public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                        if((oldVal==59)&&(newVal==0)){
+                            hourPicker.setValue(hourPicker.getValue()+1);
+                        }
+                        if((oldVal==0)&&(newVal==59)){
+                            hourPicker.setValue(hourPicker.getValue()-1);
+                        }
+
+                    }
+                });
 
                 //ampm picker
                 //NumberPicker ampmPicker = (NumberPicker) npView.findViewById(R.id.min_picker);
@@ -174,15 +308,24 @@ public class MainActivity extends ActionBarActivity implements
                     public void onClick(View v) {
                         String year=Integer.toString(yearPicker.getValue());
                         int month=monthPicker.getValue();
-                        String date=Integer.toString(datePicker.getValue());
-                        String hr=Integer.toString(hourPicker.getValue());
-                        String min=Integer.toString(minPicker.getValue());
-                        _pickTime.setText(date+"-"+monthString[month]+"-"+year+"  "+hr+":"+min);
+                        String date=String.format("%02d",datePicker.getValue());
+                        String hr=String.format("%02d",hourPicker.getValue());
+                        String min=String.format("%02d",minPicker.getValue());
+                        //String dateInString = new java.text.SimpleDateFormat("EEEE, dd/MM/yyyy/hh:mm:ss")
+                       //         .format(cal.getTime());
+
+                        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                        try {
+                            parsedDate = formatter.parse(date+"-"+(month+1)+"-"+year+" "+hr+":"+min+":"+"00");
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        //_pickTime.setText(date+"-"+monthString[month]+"-"+year+"  "+hr+":"+min);
+                        _pickTime.setText(parsedDate.toString());
                         ad.cancel();
 
                     }
                 });
-
             }
         });
     }
@@ -207,7 +350,8 @@ public class MainActivity extends ActionBarActivity implements
             prefManager.clearLoggedIn();
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intent);
-            overridePendingTransition(R.anim.push_left_out,R.anim.push_left_in);
+            finish();
+            overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);
             return true;
         }
 
@@ -222,5 +366,29 @@ public class MainActivity extends ActionBarActivity implements
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    public boolean validate() {
+        boolean valid = true;
+
+        String from = _from.getSelectedItem().toString();
+        String to= _to.getSelectedItem().toString();
+        String time=_pickTime.getText().toString();
+
+        if (from.equals(to)) {
+            Toast.makeText(getApplicationContext(),"From and To cannot be same",Toast.LENGTH_LONG).show();
+            valid = false;
+        } else {
+
+        }
+
+        if (!time.contains(":")) {
+            _pickTime.setError("click to pick start time");
+            valid = false;
+        } else {
+            _pickTime.setError(null);
+        }
+
+        return valid;
     }
 }

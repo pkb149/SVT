@@ -25,7 +25,7 @@ public class SignupActivity extends AppCompatActivity  implements
         AdapterView.OnItemSelectedListener {
     private static final String TAG = "SignupActivity";
     int sessionId=191;
-    String[] userType = { "None","Merchant", "Lorry Owner", "Agent"};
+    String[] userType = { "","Merchant", "Lorry Owner", "Agent"};
 
     @Bind(R.id.input_name) EditText _nameText;
     @Bind(R.id.input_phoneSignUp) EditText _mobileText;
@@ -157,7 +157,7 @@ public class SignupActivity extends AppCompatActivity  implements
             _reEnterPasswordText.setError(null);
         }
 
-        if (userType.isEmpty() || userType.length() == 0 || userType.equals("None")) {
+        if (userType.isEmpty() || userType.length() == 0 || userType.equals("")) {
             valid = false;
             TextView errorText = (TextView)_userType.getSelectedView();
             errorText.setError("");

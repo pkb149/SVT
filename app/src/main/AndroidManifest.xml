@@ -29,8 +29,19 @@
         <activity
             android:name=".WaitForOTPActivity"
             android:theme="@style/AppTheme.Dark" />
-        <activity android:name=".resetPasswordActivity"
-            android:theme="@style/AppTheme.Dark" ></activity>
+        <activity
+            android:name=".resetPasswordActivity"
+            android:theme="@style/AppTheme.Dark" />
+        <activity
+            android:name=".ChooseTruck"
+            android:theme="@style/AppTheme.Light" />
+        <activity android:name=".PreBookActivity"
+            android:theme="@style/AppTheme.Light"/>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_android_map_api_key"/>
+
     </application>
 
 </manifest>
