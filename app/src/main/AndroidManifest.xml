@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.sourcey.materiallogindemo">
+    package="com.pkb149.SVT">
 
     <application
         android:allowBackup="true"
@@ -8,7 +8,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name="com.pkb149.SVT.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme">
             <intent-filter>
@@ -18,24 +18,24 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LoginActivity"
+            android:name="com.pkb149.SVT.LoginActivity"
             android:theme="@style/AppTheme.Dark" />
         <activity
-            android:name=".SignupActivity"
+            android:name="com.pkb149.SVT.SignupActivity"
             android:theme="@style/AppTheme.Dark" />
         <activity
-            android:name=".ForgotPasswordActivity"
+            android:name="com.pkb149.SVT.ForgotPasswordActivity"
             android:theme="@style/AppTheme.Dark" />
         <activity
-            android:name=".WaitForOTPActivity"
+            android:name="com.pkb149.SVT.WaitForOTPActivity"
             android:theme="@style/AppTheme.Dark" />
         <activity
-            android:name=".resetPasswordActivity"
+            android:name="com.pkb149.SVT.resetPasswordActivity"
             android:theme="@style/AppTheme.Dark" />
         <activity
-            android:name=".ChooseTruck"
+            android:name="com.pkb149.SVT.ChooseTruck"
             android:theme="@style/AppTheme.Light" />
-        <activity android:name=".PreBookActivity"
+        <activity android:name="com.pkb149.SVT.PreBookActivity"
             android:theme="@style/AppTheme.Light"/>
 
         <meta-data
