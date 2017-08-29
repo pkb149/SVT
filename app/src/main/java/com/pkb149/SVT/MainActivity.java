@@ -30,6 +30,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -53,6 +54,7 @@ public class MainActivity extends ActionBarActivity implements
     Date parsedDate=null;
     String[] from = { "Hyderabad","Bangalore", "Vijayawada", "Chennai","Ananthapur","Kavali","Guntur","Delhi"};
     String[] monthString= new String[]{"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
+    String[] amPm=new String[]{"AM","PM"};
     String[] capacity = { "10 Ton","5 Ton", "1 Ton"};
     Context context;
 
@@ -79,6 +81,7 @@ public class MainActivity extends ActionBarActivity implements
         if (!prefManager.isLoggedIn()) {
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intent);
+            finish();
             overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);
         }
 
@@ -96,7 +99,7 @@ public class MainActivity extends ActionBarActivity implements
                         R.style.AppTheme_Dark_Dialog);
                 progressDialog.setIndeterminate(true);
                 progressDialog.setMessage("Loading Details from Server...");
-                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
+                //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
                 progressDialog.show();
                 AsyncHttpClient client = new AsyncHttpClient();
                 String url="http://maps.googleapis.com/maps/api/directions/json?origin="+from[_from.getSelectedItemPosition()]+"&destination="+from[_to.getSelectedItemPosition()]+"&sensor=false";
@@ -131,7 +134,7 @@ public class MainActivity extends ActionBarActivity implements
                             e.printStackTrace();
                         }
                         progressDialog.dismiss();
-                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+                        //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
                         Intent intent = new Intent(getApplicationContext(), ChooseTruck.class);
                         intent.putExtra("steps",listOfStep);
                         intent.putExtra("distance",distance);
@@ -150,7 +153,7 @@ public class MainActivity extends ActionBarActivity implements
                         super.onFailure(statusCode, headers, throwable, jsonObject);
                         Toast.makeText(getApplicationContext(),"couldn't load data, Please try again",Toast.LENGTH_LONG).show();
                         progressDialog.dismiss();
-                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+                        //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
                         Log.e("TAG","OnFailure!",throwable);
                     }
 
@@ -173,8 +176,9 @@ public class MainActivity extends ActionBarActivity implements
                 int year=calendar.get(Calendar.YEAR);
                 int month=calendar.get(Calendar.MONTH);
                 int date=calendar.get(Calendar.DATE);
-                int hour=calendar.get(Calendar.HOUR_OF_DAY);
+                int hour=calendar.get(Calendar.HOUR);
                 int min=calendar.get(Calendar.MINUTE);
+                int am_Pm=calendar.get(Calendar.AM_PM);
 
                 LayoutInflater inflater = (LayoutInflater)
                         MainActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -199,6 +203,8 @@ public class MainActivity extends ActionBarActivity implements
                 Calendar mycal = new GregorianCalendar(yearPicker.getValue(), monthPicker.getValue(), 1);
                     // Get the number of days in that month
                 int daysInMonth = mycal.getActualMaximum(Calendar.DAY_OF_MONTH); // 28
+
+                //date picker
                 final NumberPicker datePicker=(NumberPicker)npView.findViewById(R.id.date_picker);
                 datePicker.setMinValue(1);
                 datePicker.setMaxValue(daysInMonth);
@@ -217,6 +223,13 @@ public class MainActivity extends ActionBarActivity implements
                         // Get the number of days in that month
                         int daysInMonth = mycal.getActualMaximum(Calendar.DAY_OF_MONTH); // 28
                         datePicker.setMaxValue(daysInMonth);
+
+                        if((oldVal==monthPicker.getMaxValue())&&(newVal==monthPicker.getMinValue())){
+                            yearPicker.setValue(yearPicker.getValue()+1);
+                        }
+                        if((oldVal==monthPicker.getMinValue())&&(newVal==monthPicker.getMaxValue())){
+                            yearPicker.setValue(yearPicker.getValue()-1);
+                        }
                     }
                 });
 
@@ -245,7 +258,7 @@ public class MainActivity extends ActionBarActivity implements
 
                 //hour picker
                 final NumberPicker hourPicker = (NumberPicker) npView.findViewById(R.id.hour_picker);
-                hourPicker.setMaxValue(23);
+                hourPicker.setMaxValue(11);
                 hourPicker.setMinValue(0);
                 hourPicker.setValue(hour);
                 hourPicker.setFormatter(new NumberPicker.Formatter() {
@@ -282,7 +295,37 @@ public class MainActivity extends ActionBarActivity implements
                 });
 
                 //ampm picker
-                //NumberPicker ampmPicker = (NumberPicker) npView.findViewById(R.id.min_picker);
+                final NumberPicker ampmPicker = (NumberPicker) npView.findViewById(R.id.ampm_picker);
+                ampmPicker.setMinValue(0);
+                ampmPicker.setMaxValue(1);
+                ampmPicker.setDisplayedValues(amPm);
+                ampmPicker.setValue(am_Pm);
+
+
+
+                hourPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                    @Override
+                    public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+
+                        if((oldVal==hourPicker.getMaxValue())&&(newVal==hourPicker.getMinValue())){
+                            if(ampmPicker.getValue()==1){
+                                ampmPicker.setValue(0);
+                            }
+                            else{
+                                ampmPicker.setValue(1);
+                            }
+                        }
+                        if((oldVal==hourPicker.getMinValue())&&(newVal==hourPicker.getMaxValue())){
+                            if(ampmPicker.getValue()==1){
+                                ampmPicker.setValue(0);
+                            }
+                            else{
+                                ampmPicker.setValue(1);
+                            }
+                        }
+                    }
+                });
+
 
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -306,20 +349,25 @@ public class MainActivity extends ActionBarActivity implements
                     public void onClick(View v) {
                         String year=Integer.toString(yearPicker.getValue());
                         int month=monthPicker.getValue();
+                        Log.e("month",Integer.toString(month));
                         String date=String.format("%02d",datePicker.getValue());
                         String hr=String.format("%02d",hourPicker.getValue());
                         String min=String.format("%02d",minPicker.getValue());
+                        String am_pm=amPm[ampmPicker.getValue()];
                         //String dateInString = new java.text.SimpleDateFormat("EEEE, dd/MM/yyyy/hh:mm:ss")
                        //         .format(cal.getTime());
 
-                        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a");
                         try {
-                            parsedDate = formatter.parse(date+"-"+(month+1)+"-"+year+" "+hr+":"+min+":"+"00");
+                            parsedDate = formatter.parse(date+"/"+(month+1)+"/"+year+" "+hr+":"+min+":"+"00 "+am_pm);
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }
-                        //_pickTime.setText(date+"-"+monthString[month]+"-"+year+"  "+hr+":"+min);
-                        _pickTime.setText(parsedDate.toString());
+                        Calendar cal2 = Calendar.getInstance();
+                        cal2.setTime(parsedDate);
+                        Log.e("month",Integer.toString(parsedDate.getMonth()));
+                        String time=String.format("%02d",cal2.get(Calendar.HOUR))+":"+String.format("%02d",parsedDate.getMinutes())+" "+amPm[cal2.get(Calendar.AM_PM)]+", "+String.format("%02d",parsedDate.getDate())+"-"+new DateFormatSymbols().getShortMonths()[parsedDate.getMonth()];
+                        _pickTime.setText(time);
                         ad.cancel();
 
                     }
@@ -347,6 +395,7 @@ public class MainActivity extends ActionBarActivity implements
             //TODO Log user Out
             prefManager.clearLoggedIn();
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
             overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);

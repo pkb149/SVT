@@ -27,6 +27,7 @@ import com.pkb149.SVT.utility.PrefManager;
 
 import java.text.DateFormatSymbols;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 import butterknife.Bind;
@@ -41,6 +42,7 @@ public class PreBookActivity extends AppCompatActivity implements
     String capacity;
     String time;
     String travelTime;
+    String[] amPm=new String[]{"AM","PM"};
     String[] from = { "Hyderabad","Bangalore", "Vijayawada", "Chennai","Ananthapur","Kavali","Guntur","Delhi"};
     @Bind(R.id.distance) TextView _distance;
     @Bind(R.id.tv_from_prebook_page) TextView _from;
@@ -61,7 +63,9 @@ public class PreBookActivity extends AppCompatActivity implements
         _to.setText(from[getIntent().getExtras().getInt("to")]);
         capacity=getIntent().getExtras().getString("capacity");
         Date date = (Date)getIntent().getSerializableExtra("time");
-        time=String.format("%02d",date.getHours())+":"+String.format("%02d",date.getMinutes())+", "+String.format("%02d",date.getDate())+"-"+new DateFormatSymbols().getShortMonths()[date.getMonth()];
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        time=String.format("%02d",cal.get(Calendar.HOUR))+":"+String.format("%02d",date.getMinutes())+" "+amPm[cal.get(Calendar.AM_PM)]+", "+String.format("%02d",date.getDate())+"-"+new DateFormatSymbols().getShortMonths()[date.getMonth()];
         _capacity.setText(capacity);
         travelTime=getIntent().getExtras().getString("duration");
         _availableFrom.setText(time);
@@ -101,6 +105,7 @@ public class PreBookActivity extends AppCompatActivity implements
             //TODO Log user Out
             prefManager.clearLoggedIn();
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
             overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);

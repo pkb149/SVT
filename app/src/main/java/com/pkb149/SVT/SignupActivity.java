@@ -110,6 +110,7 @@ public class SignupActivity extends AppCompatActivity  implements
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+        finish();
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
 
     }

@@ -108,13 +108,15 @@ public class LoginActivity extends AppCompatActivity {
         PrefManager prefManager = new PrefManager(this);
         prefManager.setLoggedIn(sessionId);
         _loginButton.setEnabled(false);
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
         finish();
         overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);
     }
 
     public void onLoginFailed() {
         Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
-
         _loginButton.setEnabled(true);
     }
 

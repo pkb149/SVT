@@ -15,6 +15,7 @@ import com.pkb149.SVT.utility.PrefManager;
 
 import java.text.DateFormatSymbols;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -45,6 +46,7 @@ public class ChooseTruck extends AppCompatActivity implements RecyclerViewAdapte
     String distance;
     String distanceInMtr;
     Date date;
+    String[] amPm=new String[]{"AM","PM"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +65,9 @@ public class ChooseTruck extends AppCompatActivity implements RecyclerViewAdapte
         date = (Date)getIntent().getSerializableExtra("time");
         _fromResult.append(from[fromLocation]);
         _toResult.append(from[toLocation]);
-        time=String.format("%02d",date.getHours())+":"+String.format("%02d",date.getMinutes())+", "+String.format("%02d",date.getDate())+"-"+new DateFormatSymbols().getShortMonths()[date.getMonth()];
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        time=String.format("%02d",cal.get(Calendar.HOUR))+":"+String.format("%02d",date.getMinutes())+" "+amPm[cal.get(Calendar.AM_PM)]+", "+String.format("%02d",date.getDate())+"-"+new DateFormatSymbols().getShortMonths()[date.getMonth()];
         _pickedTime.setText(time);
         _capacity.setText(capacity);
         _travelTime.setText(travelTime);
@@ -107,6 +111,7 @@ public class ChooseTruck extends AppCompatActivity implements RecyclerViewAdapte
             //TODO Log user Out
             prefManager.clearLoggedIn();
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
             overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);
