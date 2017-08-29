@@ -258,8 +258,8 @@ public class MainActivity extends ActionBarActivity implements
 
                 //hour picker
                 final NumberPicker hourPicker = (NumberPicker) npView.findViewById(R.id.hour_picker);
-                hourPicker.setMaxValue(11);
-                hourPicker.setMinValue(0);
+                hourPicker.setMaxValue(12);
+                hourPicker.setMinValue(1);
                 hourPicker.setValue(hour);
                 hourPicker.setFormatter(new NumberPicker.Formatter() {
                     @Override
@@ -307,7 +307,7 @@ public class MainActivity extends ActionBarActivity implements
                     @Override
                     public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
 
-                        if((oldVal==hourPicker.getMaxValue())&&(newVal==hourPicker.getMinValue())){
+                        if((oldVal==11)&&(newVal==12)){
                             if(ampmPicker.getValue()==1){
                                 ampmPicker.setValue(0);
                             }
@@ -315,7 +315,7 @@ public class MainActivity extends ActionBarActivity implements
                                 ampmPicker.setValue(1);
                             }
                         }
-                        if((oldVal==hourPicker.getMinValue())&&(newVal==hourPicker.getMaxValue())){
+                        if((oldVal==12)&&(newVal==11)){
                             if(ampmPicker.getValue()==1){
                                 ampmPicker.setValue(0);
                             }
@@ -369,7 +369,6 @@ public class MainActivity extends ActionBarActivity implements
                         String time=String.format("%02d",cal2.get(Calendar.HOUR))+":"+String.format("%02d",parsedDate.getMinutes())+" "+amPm[cal2.get(Calendar.AM_PM)]+", "+String.format("%02d",parsedDate.getDate())+"-"+new DateFormatSymbols().getShortMonths()[parsedDate.getMonth()];
                         _pickTime.setText(time);
                         ad.cancel();
-
                     }
                 });
             }
