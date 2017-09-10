@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.pkb149.SVT.LorryOwnerFlow.FleetDetails;
 import com.pkb149.SVT.utility.PrefManager;
 
 import butterknife.ButterKnife;
@@ -23,6 +24,7 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
     int sessionId=191;
+    PrefManager prefManager;
 
     @Bind(R.id.input_phone) EditText _phoneText;
     @Bind(R.id.input_password) EditText _passwordText;
@@ -35,6 +37,22 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
+        prefManager = new PrefManager(this);
+
+        if (prefManager.isLoggedIn()) {
+            if(prefManager.getUserType().equals("Agent")){
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+                finish();
+                overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);
+            }
+            else{
+                Intent intent = new Intent(getApplicationContext(), FleetDetails.class);
+                startActivity(intent);
+                finish();
+                overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);
+            }
+        }
         
         _loginButton.setOnClickListener(new View.OnClickListener() {
 
@@ -106,7 +124,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onLoginSuccess() {
         PrefManager prefManager = new PrefManager(this);
-        prefManager.setLoggedIn(sessionId);
+        prefManager.setLoggedIn("Agent_"+sessionId);
         _loginButton.setEnabled(false);
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

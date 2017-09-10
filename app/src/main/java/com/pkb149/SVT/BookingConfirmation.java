@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,7 +21,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.pkb149.SVT.utility.PrefManager;
@@ -35,10 +33,8 @@ import java.util.Date;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class PreBookActivity extends AppCompatActivity implements
-        OnMapReadyCallback,
-        GoogleMap.OnPolylineClickListener,
-        GoogleMap.OnPolygonClickListener{
+public class BookingConfirmation extends AppCompatActivity  implements
+        OnMapReadyCallback{
     PrefManager prefManager;
     ArrayList steps;
     String capacity;
@@ -50,43 +46,37 @@ public class PreBookActivity extends AppCompatActivity implements
     Date date;
     String[] amPm=new String[]{"AM","PM"};
     String[] from = { "Hyderabad","Bangalore", "Vijayawada", "Chennai","Ananthapur","Kavali","Guntur","Delhi"};
-    @Bind(R.id.distance) TextView _distance;
-    @Bind(R.id.tv_from_prebook_page) TextView _from;
-    @Bind(R.id.tv_to_prebook_page) TextView _to;
-    @Bind(R.id.capacity_tv_prebook) TextView _capacity;
-    @Bind(R.id.pickedTime_tv_prebook) TextView _pickedTime;
-    @Bind(R.id.availableFrom_tv_prebook) TextView _availableFrom;
-    @Bind(R.id.enter_merchant_details_button) Button _enterMerchantDetails;
+    @Bind(R.id.tv_from_conf) TextView _fromBC;
+    @Bind(R.id.tv_to_conf) TextView _toBC;
+    @Bind(R.id.capacity_tv_conf) TextView _capacityBC;
+    @Bind(R.id.booking_from_tv_conf) TextView _bookingTimeBC;
+    @Bind(R.id.travel_time_tv_conf) TextView _travelTimeBC;
+    @Bind(R.id.call_driver_button) Button _callDriver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pre_book);
+        setContentView(R.layout.activity_booking_confirmation);
         prefManager = new PrefManager(this);
         ButterKnife.bind(this);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        Log.e("Inside on Create"," of preBook Activity");
         steps=getIntent().getParcelableArrayListExtra("steps");
-        distance=getIntent().getStringExtra("distance");
         duration=getIntent().getStringExtra("duration");
         fromLocation=getIntent().getExtras().getInt("from");
         toLocation=getIntent().getExtras().getInt("to");
+        _fromBC.setText(from[fromLocation]);
+        _toBC.setText(from[toLocation]);
         capacity=getIntent().getExtras().getString("capacity");
         date = (Date)getIntent().getSerializableExtra("time");
-        _distance.setText(distance+", "+duration);
-        _from.setText(from[fromLocation]);
-        _to.setText(from[toLocation]);
-
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         time=String.format("%02d",cal.get(Calendar.HOUR))+":"+String.format("%02d",date.getMinutes())+" "+amPm[cal.get(Calendar.AM_PM)]+", "+String.format("%02d",date.getDate())+"-"+new DateFormatSymbols().getShortMonths()[date.getMonth()];
-        _capacity.setText(capacity);
-        _availableFrom.setText(time);
-        _pickedTime.append(time);
-//        int distanceMtr=Integer.parseInt(getIntent().getStringExtra("distanceInMtr"));
-  //      Double cost=(distanceMtr/83.33);
-    //    _cost.append(Integer.toString(cost.intValue()));
+        _capacityBC.setText(capacity);
+        _travelTimeBC.setText(duration);
+        _bookingTimeBC.append(time);
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+                .findFragmentById(R.id.map_conf);
 
         if(isGooglePlayServicesAvailable(this)){
             mapFragment.getMapAsync(this);
@@ -95,26 +85,7 @@ public class PreBookActivity extends AppCompatActivity implements
             Toast.makeText(getApplicationContext(),"Please install google play services to proceed",Toast.LENGTH_LONG).show();
             finish();
         }
-
-        _enterMerchantDetails.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), MerchantDetailsForm.class);
-                intent.putExtra("steps",steps);
-                intent.putExtra("distance",distance);
-                intent.putExtra("duration",duration);
-                //intent.putExtra("distanceInMtr",distanceInMtr);
-                intent.putExtra("from",fromLocation);
-                intent.putExtra("to",toLocation);
-                intent.putExtra("capacity",capacity);
-                intent.putExtra("time",date);
-                startActivity(intent);
-                overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);
-            }
-        });
-
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -131,6 +102,7 @@ public class PreBookActivity extends AppCompatActivity implements
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_logout) {
+
             //TODO Log user Out
             prefManager.clearLoggedIn();
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
@@ -141,9 +113,9 @@ public class PreBookActivity extends AppCompatActivity implements
             return true;
         }
         else if(id==android.R.id.home){
-            onBackPressed();
-            finish();
-            return true;
+                onBackPressed();
+                finish();
+                return true;
         }
         else if(id==R.id.action_history){
             Intent intent = new Intent(getApplicationContext(), BookingHistory.class);
@@ -154,20 +126,22 @@ public class PreBookActivity extends AppCompatActivity implements
 
         return super.onOptionsItemSelected(item);
     }
-
-    @Override
-    public void onPolygonClick(Polygon polygon) {
-
-    }
-
-    @Override
-    public void onPolylineClick(Polyline polyline) {
-
+    public boolean isGooglePlayServicesAvailable(Activity activity) {
+        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+        int status = googleApiAvailability.isGooglePlayServicesAvailable(activity);
+        if(status != ConnectionResult.SUCCESS) {
+            if(googleApiAvailability.isUserResolvableError(status)) {
+                googleApiAvailability.getErrorDialog(activity, status, 2404).show();
+            }
+            return false;
+        }
+        return true;
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        googleMap.addPolyline(new PolylineOptions()
+        PolylineOptions polylineOptions=new PolylineOptions();
+        Polyline polyline1 = googleMap.addPolyline(new PolylineOptions()
                 .clickable(false)
                 .addAll(steps));
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
@@ -189,20 +163,5 @@ public class PreBookActivity extends AppCompatActivity implements
         }
         googleMap.moveCamera(cu);
 
-        googleMap.setOnPolylineClickListener(this);
-        googleMap.setOnPolygonClickListener(this);
-
-    }
-
-    public boolean isGooglePlayServicesAvailable(Activity activity) {
-        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
-        int status = googleApiAvailability.isGooglePlayServicesAvailable(activity);
-        if(status != ConnectionResult.SUCCESS) {
-            if(googleApiAvailability.isUserResolvableError(status)) {
-                googleApiAvailability.getErrorDialog(activity, status, 2404).show();
-            }
-            return false;
-        }
-        return true;
     }
 }

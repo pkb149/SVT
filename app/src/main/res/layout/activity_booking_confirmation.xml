@@ -26,7 +26,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/tv_from_prebook_page"
+                    android:id="@+id/tv_from_conf"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -63,7 +63,7 @@
                 android:shadowRadius="5">
 
                 <TextView
-                    android:id="@+id/tv_to_prebook_page"
+                    android:id="@+id/tv_to_conf"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -98,7 +98,7 @@
                 android:textSize="16dp" />
 
             <TextView
-                android:id="@+id/capacity_tv_prebook"
+                android:id="@+id/capacity_tv_conf"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
@@ -124,12 +124,12 @@
                 android:gravity="center"
                 android:paddingBottom="5dp"
                 android:paddingTop="5dp"
-                android:text="Requested Time"
+                android:text="Booking From:"
                 android:textColor="@color/jet"
                 android:textSize="16dp" />
 
             <TextView
-                android:id="@+id/pickedTime_tv_prebook"
+                android:id="@+id/booking_from_tv_conf"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
@@ -155,12 +155,12 @@
                 android:gravity="center"
                 android:paddingBottom="5dp"
                 android:paddingTop="5dp"
-                android:text="Available From"
+                android:text="Travel Time"
                 android:textColor="@color/jet"
                 android:textSize="16dp" />
 
             <TextView
-                android:id="@+id/availableFrom_tv_prebook"
+                android:id="@+id/travel_time_tv_conf"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
@@ -183,7 +183,7 @@
         android:orientation="horizontal">
 
         <LinearLayout
-            android:id="@+id/mapLayout"
+            android:id="@+id/mapLayout_conf"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1">
@@ -191,7 +191,7 @@
 
             <fragment xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
-                android:id="@+id/map"
+                android:id="@+id/map_conf"
                 android:name="com.google.android.gms.maps.SupportMapFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -210,12 +210,13 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/distance"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:scaleType="center"
             android:textSize="20dp"
+            android:textColor="@android:color/holo_green_dark"
+            android:text="Booking Confirmed. You will get an e-mail and sms confirmation shortly. Driver details will be shared 4 hrs in advance"
             android:textStyle="bold" />
 
         <ScrollView
@@ -244,7 +245,7 @@
                         android:textColor="@color/black" />
 
                     <TextView
-                        android:id="@+id/lorry_details_tv"
+                        android:id="@+id/lorry_details_tv_conf"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
@@ -269,7 +270,7 @@
                         android:textColor="@color/black" />
 
                     <TextView
-                        android:id="@+id/owner_id_tv"
+                        android:id="@+id/owner_id_tv_conf"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
@@ -381,9 +382,9 @@
                 <Button
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Enter Merchant Details"
+                    android:text="Call Driver"
                     android:textSize="20dip"
-                    android:id="@+id/enter_merchant_details_button"/>
+                    android:id="@+id/call_driver_button"/>
             </LinearLayout>
         </ScrollView>
     </LinearLayout>

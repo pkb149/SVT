@@ -52,7 +52,8 @@ public class MainActivity extends ActionBarActivity implements
     @Bind(R.id.tv_pickTime) TextView _pickTime;
     @Bind(R.id.btn_search) Button _search;
     Date parsedDate=null;
-    String[] from = { "Hyderabad","Bangalore", "Vijayawada", "Chennai","Ananthapur","Kavali","Guntur","Delhi"};
+    String[] from = { "Hyderabad","Bangalore", "Vijayawada", "Chennai","Anantapur","Kavali","Guntur","Delhi"};
+    String[] fromMaps = { "Hyderabad","Bangalore", "Vijayawada", "Chennai","Anantapur","Nellore","Guntur","Delhi"};
     String[] monthString= new String[]{"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
     String[] amPm=new String[]{"AM","PM"};
     String[] capacity = { "10 Ton","5 Ton", "1 Ton"};
@@ -78,12 +79,12 @@ public class MainActivity extends ActionBarActivity implements
         _capacity.setAdapter(capacityAA);
 
         prefManager = new PrefManager(this);
-        if (!prefManager.isLoggedIn()) {
+        /*if (!prefManager.isLoggedIn()) {
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intent);
             finish();
             overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);
-        }
+        }*/
 
         _search.setOnClickListener(new View.OnClickListener(){
 
@@ -102,7 +103,8 @@ public class MainActivity extends ActionBarActivity implements
                 //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
                 progressDialog.show();
                 AsyncHttpClient client = new AsyncHttpClient();
-                String url="http://maps.googleapis.com/maps/api/directions/json?origin="+from[_from.getSelectedItemPosition()]+"&destination="+from[_to.getSelectedItemPosition()]+"&sensor=false";
+                String url="http://maps.googleapis.com/maps/api/directions/json?origin="+fromMaps[_from.getSelectedItemPosition()]+"&destination="+fromMaps[_to.getSelectedItemPosition()]+"&sensor=false";
+                Log.e("URL:",url);
                 client.get(url, new JsonHttpResponseHandler() {
 
                     @Override
@@ -144,8 +146,13 @@ public class MainActivity extends ActionBarActivity implements
                         intent.putExtra("to",_to.getSelectedItemPosition());
                         intent.putExtra("time",parsedDate);
                         intent.putExtra("capacity",_capacity.getSelectedItem().toString());
-                        startActivity(intent);
-                        overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);
+                        if(listOfStep!=null&&listOfStep.size()!=0){
+                            startActivity(intent);
+                            overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);
+                        }
+                        else{
+                            Toast.makeText(getApplicationContext(),"Couldn't load Data. Please try again",Toast.LENGTH_LONG).show();
+                        }
                     }
 
                     @Override
@@ -170,8 +177,6 @@ public class MainActivity extends ActionBarActivity implements
 
             @Override
             public void onClick(View v) {
-                //CustomDialog cd=new CustomDialog(MainActivity.this);
-                //cd.setNumberDialog();
                 Calendar calendar= Calendar.getInstance();
                 int year=calendar.get(Calendar.YEAR);
                 int month=calendar.get(Calendar.MONTH);
@@ -397,6 +402,12 @@ public class MainActivity extends ActionBarActivity implements
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
+            overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);
+            return true;
+        }
+        else if(id==R.id.action_history){
+            Intent intent = new Intent(getApplicationContext(), BookingHistory.class);
+            startActivity(intent);
             overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);
             return true;
         }

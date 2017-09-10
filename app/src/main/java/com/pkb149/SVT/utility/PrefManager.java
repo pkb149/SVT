@@ -27,18 +27,23 @@ public class PrefManager {
         editor = pref.edit();
     }
 
-    public void setLoggedIn(int sessionId) {
-        editor.putInt(isloggedIn, sessionId);
+    public void setLoggedIn(String sessionId) {
+        editor.putString(isloggedIn, sessionId);
         editor.commit();
     }
     public void clearLoggedIn(){
-        editor.putInt(isloggedIn, 0);
+        editor.putString(isloggedIn, null);
         editor.commit();
     }
 
     public boolean isLoggedIn() {
-        Log.e("login preference value",Integer.toString(pref.getInt(isloggedIn,0)));
-        return !(pref.getInt(isloggedIn, 0)==0);
+
+        Log.e("login preference value",": "+pref.getString(isloggedIn,null));
+        return !(pref.getString(isloggedIn, null)==null);
+    }
+    public String getUserType(){
+        return pref.getString(isloggedIn,null).split("_")[0];
+
     }
 
 }

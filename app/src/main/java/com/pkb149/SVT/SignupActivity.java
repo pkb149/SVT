@@ -15,6 +15,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.pkb149.SVT.LorryOwnerFlow.FleetDetails;
 import com.pkb149.SVT.utility.PrefManager;
 
 import butterknife.ButterKnife;
@@ -85,7 +86,7 @@ public class SignupActivity extends AppCompatActivity  implements
         String mobile = _mobileText.getText().toString();
         String password = _passwordText.getText().toString();
         String reEnterPassword = _reEnterPasswordText.getText().toString();
-        String userType=_userType.getSelectedItem().toString();
+        String userTypes=_userType.getSelectedItem().toString();
 
         // TODO: Implement your own signup logic here.
 
@@ -104,14 +105,27 @@ public class SignupActivity extends AppCompatActivity  implements
 
     public void onSignupSuccess() {
         PrefManager prefManager = new PrefManager(this);
-        prefManager.setLoggedIn(sessionId);
-        _signupButton.setEnabled(false);
-        setResult(RESULT_OK, null);
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
-        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+        if(_userType.getSelectedItem().toString().equals("Agent")){
+            prefManager.setLoggedIn("Agent_"+sessionId);
+            _signupButton.setEnabled(false);
+            setResult(RESULT_OK, null);
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+            overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+        }
+        else if(_userType.getSelectedItem().toString().equals("Lorry Owner")){
+            prefManager.setLoggedIn("Lorry Owner_"+sessionId);
+            _signupButton.setEnabled(false);
+            setResult(RESULT_OK, null);
+            Intent intent = new Intent(getApplicationContext(), FleetDetails.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+            overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+        }
+
 
     }
 
@@ -127,7 +141,7 @@ public class SignupActivity extends AppCompatActivity  implements
         String mobile = _mobileText.getText().toString();
         String password = _passwordText.getText().toString();
         String reEnterPassword = _reEnterPasswordText.getText().toString();
-        String userType=_userType.getSelectedItem().toString();
+        String userTypes=_userType.getSelectedItem().toString();
 
         if (name.isEmpty() || name.length() < 3) {
             _nameText.setError("at least 3 characters");
@@ -158,7 +172,7 @@ public class SignupActivity extends AppCompatActivity  implements
             _reEnterPasswordText.setError(null);
         }
 
-        if (userType.isEmpty() || userType.length() == 0 || userType.equals("")) {
+        if (userTypes.isEmpty() || userTypes.length() == 0 || userTypes.equals("")) {
             valid = false;
             TextView errorText = (TextView)_userType.getSelectedView();
             errorText.setError("");

@@ -54,6 +54,7 @@ public class ChooseTruck extends AppCompatActivity implements RecyclerViewAdapte
         setContentView(R.layout.activity_choose_truck);
         prefManager = new PrefManager(this);
         ButterKnife.bind(this);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         //getIntent().getExtras().getString("to");
         fromLocation=getIntent().getExtras().getInt("from");
         toLocation=getIntent().getExtras().getInt("to");
@@ -114,6 +115,17 @@ public class ChooseTruck extends AppCompatActivity implements RecyclerViewAdapte
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
+            overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);
+            return true;
+        }
+        else if(id==android.R.id.home){
+            onBackPressed();
+            finish();
+            return true;
+        }
+        else if(id==R.id.action_history){
+            Intent intent = new Intent(getApplicationContext(), BookingHistory.class);
+            startActivity(intent);
             overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);
             return true;
         }

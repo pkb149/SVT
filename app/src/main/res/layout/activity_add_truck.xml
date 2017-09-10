@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="56dp"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="72dp"
+            android:layout_marginBottom="24dp"
+            android:text="Add a Truck"
+            android:textSize="40dp"
+            android:textStyle="bold"
+            android:textColor="@color/iron"
+            tools:fontFamily="sans-serif-condensed"
+            android:layout_gravity="center_horizontal" />
+
+        <!--  Pick Up Address -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
+                <EditText android:id="@+id/truck_registration_number_et"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Truck registration number"
+                    android:textColor="@color/white"/>
+            </android.support.design.widget.TextInputLayout>
+        </LinearLayout>
+        <!--  Drop Address -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
+            <EditText android:id="@+id/truck_registered_owner_name_et"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Registered Owner Name"
+                android:textColor="@color/white"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <!--  Merchant Name -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
+            <EditText android:id="@+id/driver_name_et"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Driver Name"
+                android:textColor="@color/white"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <!--  Merchant Mobile Number -->
+        <!--  Mobile Label -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    android:editable="false"
+                    android:text="+91"
+                    android:textColor="@color/white"/>
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
+                <EditText android:id="@+id/driver_mobile_number_et"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="phone"
+                    android:maxLength="10"
+                    android:hint="Driver Mobile Number"
+                    android:textColor="@color/white"/>
+            </android.support.design.widget.TextInputLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Upload: "
+                android:textSize="16dip"
+                android:layout_weight="3"
+                />
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/upload_rc_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="RC"/>
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/upload_dl_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="DL"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Permit: "
+                android:textSize="16dip"
+                android:layout_weight="3"
+                />
+
+            <TextView
+                android:id="@+id/permit_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="select permit"
+                android:layout_weight="2"/>
+        </LinearLayout>
+
+
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/submit_for_verification_button"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp"
+            android:padding="12dp"
+            android:text="Submit for verification"/>
+
+    </LinearLayout>
+</ScrollView>
