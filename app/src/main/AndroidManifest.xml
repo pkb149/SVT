@@ -70,8 +70,16 @@
         <activity
             android:name=".MerchantDetailsForm"
             android:screenOrientation="portrait" />
-        <activity android:name=".LorryOwnerFlow.SingleLorryDetail" />
-        <activity android:name=".LorryOwnerFlow.MakeLorryUnavailable"></activity>
+
+        <activity android:name=".LorryOwnerFlow.SingleLorryDetail"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Light" />
+
+        <activity android:name=".LorryOwnerFlow.MakeLorryUnavailable"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Light" />
     </application>
+    <uses-feature android:name="android.hardware.camera"></uses-feature>
+
 
 </manifest>

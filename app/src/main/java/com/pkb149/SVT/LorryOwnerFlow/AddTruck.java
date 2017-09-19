@@ -1,11 +1,23 @@
 package com.pkb149.SVT.LorryOwnerFlow;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,19 +25,32 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.pkb149.SVT.LoginActivity;
+import com.pkb149.SVT.MainActivity;
 import com.pkb149.SVT.R;
 import com.pkb149.SVT.utility.PrefManager;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
+import static java.security.AccessController.getContext;
+
 public class AddTruck extends AppCompatActivity {
+    int REQUEST_IMAGE_CAPTURE=100;
+    int PICK_IMAGE=101;
+    private Uri imageToUploadUri;
     PrefManager prefManager;
+    android.support.v7.app.AlertDialog ad;
     @Bind(R.id.truck_registration_number_et) EditText _truckRegistrationNumber;
     @Bind(R.id.truck_registered_owner_name_et) EditText _truckRegisteredOwnerName;
     @Bind(R.id.driver_name_et) EditText _driverName;
@@ -117,6 +142,115 @@ public class AddTruck extends AppCompatActivity {
             }
         });
 
+        _uploadRC.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutInflater inflater = (LayoutInflater)
+                        AddTruck.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View npView = inflater.inflate(R.layout.file_picker_dialog, null);
+
+
+                npView.findViewById(R.id.camera_ll).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                        File f = new File(Environment.getExternalStorageDirectory(), "IMG_"+timeStamp+".jpg");
+                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+                        imageToUploadUri = Uri.fromFile(f);
+                        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                        }
+                    }
+                });
+
+
+                npView.findViewById(R.id.gallery_ll).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent pickIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        pickIntent.setType("image/*");
+                        //Intent chooserIntent = Intent.createChooser(getIntent, "Select Image");
+                        //chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] {pickIntent});
+                        if (pickIntent.resolveActivity(getPackageManager()) != null) {
+                            startActivityForResult(pickIntent, PICK_IMAGE);
+                        }
+                    }
+                });
+                npView.findViewById(R.id.file_ll).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                        getIntent.setType("*/*");
+                        if (getIntent.resolveActivity(getPackageManager()) != null) {
+                            startActivityForResult(getIntent, PICK_IMAGE);
+                        }
+
+                    }
+                });
+
+
+                android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(AddTruck.this);
+                builder.setView(npView);
+                ad=builder.create();
+                ad.getWindow().setBackgroundDrawableResource(R.color.primary_dark);
+                ad.show();
+            }
+        });
+
+        _uploadDL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutInflater inflater = (LayoutInflater)
+                        AddTruck.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View npView = inflater.inflate(R.layout.file_picker_dialog, null);
+
+                npView.findViewById(R.id.camera_ll).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                        File f = new File(Environment.getExternalStorageDirectory(), "IMG_"+timeStamp+".jpg");
+                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+                        imageToUploadUri = Uri.fromFile(f);
+                        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                        }
+                    }
+                });
+
+
+                npView.findViewById(R.id.gallery_ll).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent pickIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        pickIntent.setType("image/*");
+                        //Intent chooserIntent = Intent.createChooser(getIntent, "Select Image");
+                        //chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] {pickIntent});
+                        if (pickIntent.resolveActivity(getPackageManager()) != null) {
+                            startActivityForResult(pickIntent, PICK_IMAGE);
+                        }
+                    }
+                });
+                npView.findViewById(R.id.file_ll).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                        getIntent.setType("*/*");
+                        if (getIntent.resolveActivity(getPackageManager()) != null) {
+                            startActivityForResult(getIntent, PICK_IMAGE);
+                        }
+
+                    }
+                });
+                android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(AddTruck.this);
+                builder.setView(npView);
+                ad=builder.create();
+                ad.getWindow().setBackgroundDrawableResource(R.color.primary_dark);
+                ad.show();
+            }
+        });
+
     }
 
     @Override
@@ -163,6 +297,25 @@ public class AddTruck extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+            if(imageToUploadUri != null){
+                Uri selectedImage = imageToUploadUri;
+                Toast.makeText(this,selectedImage.toString(),Toast.LENGTH_LONG).show();
+            }else{
+                Toast.makeText(this,"Error while capturing Image",Toast.LENGTH_LONG).show();
+            }
+        }
+        if(requestCode == PICK_IMAGE && resultCode == Activity.RESULT_OK){
+            String selectedImage = data.getData().getPath();
+            Toast.makeText(this,selectedImage.toString(),Toast.LENGTH_LONG).show();
+        }
+        if(ad!=null){
+            ad.dismiss();
+        }
+    }
 }
 
 

@@ -1,0 +1,100 @@
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/fleet_details_CV"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="2dp"
+    android:clickable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    app:cardCornerRadius="0dp"
+    app:cardElevation="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="90dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:background="@color/monsoon">
+
+            <TextView
+                android:id="@+id/number_plate_tv"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:scaleType="center"
+                android:text="Number Plate" />
+            <TextView
+                android:id="@+id/driver_name_tv"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Driver:\n"
+                android:scaleType="center"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0sp"
+            android:layout_height="90dp"
+            android:layout_weight="3"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="5dp"
+                    android:text="Driver Mob No: "
+                    android:textColor="#444444"
+                    android:textSize="14dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/driver_mobile_number_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="end|center_vertical"
+                    android:paddingRight="10dp"
+                    android:textColor="#444444"
+                    android:textSize="14dp"
+                    android:text="9876543210"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0sp"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:paddingLeft="5dp">
+
+                <Button
+                    android:id="@+id/call_driver"
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Call Driver" />
+
+                <Button
+                    android:id="@+id/more_details"
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="More Details" />
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+</android.support.v7.widget.CardView>

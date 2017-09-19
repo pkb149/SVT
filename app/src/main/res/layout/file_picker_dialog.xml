@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="200dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:background="@drawable/border">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Pick Image From:"
+            android:textStyle="bold"
+            android:textSize="20dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/camera_ll"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:background="@drawable/border">
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:src="@android:drawable/ic_menu_camera" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:layout_margin="10dp"
+            android:textSize="20dp"
+            android:layout_gravity="center_vertical"
+            android:text="Camera" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/gallery_ll"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:background="@drawable/border">
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:src="@android:drawable/ic_menu_gallery" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:layout_gravity="center_vertical"
+            android:textSize="20dp"
+            android:layout_margin="10dp"
+            android:text="Gallery" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/file_ll"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:background="@drawable/border">
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:src="@android:drawable/ic_menu_save" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="10dp"
+            android:textSize="20dp"
+            android:text="File Explorer" />
+    </LinearLayout>
+
+</LinearLayout>

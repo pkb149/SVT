@@ -2,5 +2,8 @@
     <string name="app_name">SVT</string>
     <string name="action_logout">Logout</string>
     <string name="action_history">Booking History</string>
+    <string name="action_premit">Add/Remove Permit</string>
+    <string name="action_unavailable">Make Lorry Unavailable</string>
+    <string name="action_driver">Update Driver Details</string>
     <string name="google_android_map_api_key">AIzaSyD4HjtABQWXvEfTdV6gwfQIKARccscM7Gs</string>
 </resources>

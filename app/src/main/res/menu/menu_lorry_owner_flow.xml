@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" tools:context="com.pkb149.SVT.MainActivity">
+    <item android:id="@+id/action_premit" android:title="@string/action_premit"
+        android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/action_unavailable" android:title="@string/action_unavailable"
+        android:orderInCategory="100" app:showAsAction="never"/>
+    <item android:id="@+id/action_driver" android:title="@string/action_driver"
+        android:orderInCategory="100" app:showAsAction="never"/>
+    <item android:id="@+id/action_logout" android:title="@string/action_logout"
+        android:orderInCategory="100" app:showAsAction="never"
+        />
+</menu>

@@ -26,7 +26,7 @@ public class SignupActivity extends AppCompatActivity  implements
         AdapterView.OnItemSelectedListener {
     private static final String TAG = "SignupActivity";
     int sessionId=191;
-    String[] userType = { "","Merchant", "Lorry Owner", "Agent"};
+    String[] userType = { "", "Lorry Owner", "Agent"};
 
     @Bind(R.id.input_name) EditText _nameText;
     @Bind(R.id.input_phoneSignUp) EditText _mobileText;
