@@ -15,8 +15,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.katepratik.msg91api.MSG91;
 import com.pkb149.SVT.LorryOwnerFlow.FleetDetails;
 import com.pkb149.SVT.utility.PrefManager;
+
+import java.util.Random;
 
 import butterknife.ButterKnife;
 import butterknife.Bind;
@@ -25,8 +28,8 @@ import butterknife.Bind;
 public class SignupActivity extends AppCompatActivity  implements
         AdapterView.OnItemSelectedListener {
     private static final String TAG = "SignupActivity";
-    int sessionId=191;
     String[] userType = { "", "Lorry Owner", "Agent"};
+    MSG91 msg91;
 
     @Bind(R.id.input_name) EditText _nameText;
     @Bind(R.id.input_phoneSignUp) EditText _mobileText;
@@ -41,6 +44,7 @@ public class SignupActivity extends AppCompatActivity  implements
         setContentView(R.layout.activity_signup);
         ButterKnife.bind(this);
         _userType.setOnItemSelectedListener(this);
+        msg91 = new MSG91(getString(R.string.sendotp_key));
 
         ArrayAdapter aa = new ArrayAdapter(this,android.R.layout.simple_spinner_item,userType);
         aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -74,60 +78,38 @@ public class SignupActivity extends AppCompatActivity  implements
             return;
         }
 
-        _signupButton.setEnabled(false);
-
-        final ProgressDialog progressDialog = new ProgressDialog(SignupActivity.this,
+        /*final ProgressDialog progressDialog = new ProgressDialog(SignupActivity.this,
                 R.style.AppTheme_Dark_Dialog);
         progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("Creating Account...");
-        progressDialog.show();
+        progressDialog.setMessage("Sending OTP...");
+        progressDialog.show();*/
 
         String name = _nameText.getText().toString();
         String mobile = _mobileText.getText().toString();
         String password = _passwordText.getText().toString();
         String reEnterPassword = _reEnterPasswordText.getText().toString();
         String userTypes=_userType.getSelectedItem().toString();
+        char otp_char[]=OTP(4);
+        String otp= new String(otp_char);
+        Log.d(TAG,otp);
+        msg91.composeMessage("iPOOLA", "Your OTP is "+otp);
+        msg91.to(mobile);
+        String sendStatus = msg91.send();
+        Log.d(TAG, sendStatus);
+        Intent intent=new Intent(SignupActivity.this,EnterOTP.class);
+        intent.putExtra("name",name);
+        intent.putExtra("phone",mobile);
+        intent.putExtra("password",password);
+        intent.putExtra("userType",userTypes);
+        intent.putExtra("OTP",otp);
 
-        // TODO: Implement your own signup logic here.
-
-        new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run() {
-                        // On complete call either onSignupSuccess or onSignupFailed
-                        // depending on success
-                        onSignupSuccess();
-                        // onSignupFailed();
-                        progressDialog.dismiss();
-                    }
-                }, 3000);
-    }
-
-
-    public void onSignupSuccess() {
-        PrefManager prefManager = new PrefManager(this);
-        if(_userType.getSelectedItem().toString().equals("Agent")){
-            prefManager.setLoggedIn("Agent_"+sessionId);
-            _signupButton.setEnabled(false);
-            setResult(RESULT_OK, null);
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
-            overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
-        }
-        else if(_userType.getSelectedItem().toString().equals("Lorry Owner")){
-            prefManager.setLoggedIn("Lorry Owner_"+sessionId);
-            _signupButton.setEnabled(false);
-            setResult(RESULT_OK, null);
-            Intent intent = new Intent(getApplicationContext(), FleetDetails.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
-            overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
-        }
-
+        //progressDialog.dismiss();
+        startActivity(intent);
 
     }
+
+
+
 
     public void onSignupFailed() {
         Toast.makeText(getBaseContext(), "Sign Up failed", Toast.LENGTH_LONG).show();
@@ -195,5 +177,44 @@ public class SignupActivity extends AppCompatActivity  implements
 
     }
 
+
+    static char[] OTP(int len)
+    {
+        // Using numeric values
+        String numbers = "0123456789";
+        // Using random method
+        Random rndm_method = new Random();
+        char[] otp = new char[len];
+        for (int i = 0; i < len; i++)
+        {
+            // Use of charAt() method : to get character value
+            // Use of nextInt() as it is scanning the value as int
+            otp[i] =
+                    numbers.charAt(rndm_method.nextInt(numbers.length()));
+        }
+        return otp;
+    }
+
+    void sendOTP(){
+        String name = _nameText.getText().toString();
+        String mobile = _mobileText.getText().toString();
+        String password = _passwordText.getText().toString();
+        String reEnterPassword = _reEnterPasswordText.getText().toString();
+        String userTypes=_userType.getSelectedItem().toString();
+        char otp_char[]=OTP(4);
+        String otp= new String(otp_char);
+        Log.d(TAG,otp);
+        msg91.composeMessage("iPOOLA", "Your OTP is "+otp);
+        msg91.to(mobile);
+        String sendStatus = msg91.send();
+        Log.d(TAG, sendStatus);
+        Intent intent=new Intent(SignupActivity.this,EnterOTP.class);
+        intent.putExtra("name",name);
+        intent.putExtra("phone",mobile);
+        intent.putExtra("password",password);
+        intent.putExtra("userType",userTypes);
+        intent.putExtra("OTP",otp);
+        startActivity(intent);
+    }
 
 }

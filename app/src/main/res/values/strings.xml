@@ -6,4 +6,5 @@
     <string name="action_unavailable">Make Lorry Unavailable</string>
     <string name="action_driver">Update Driver Details</string>
     <string name="google_android_map_api_key">AIzaSyD4HjtABQWXvEfTdV6gwfQIKARccscM7Gs</string>
+    <string name="sendotp_key">182547AyPIIazGn5a013451</string>
 </resources>
