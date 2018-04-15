@@ -53,5 +53,15 @@
             android:textSize="16dip"
             android:layout_weight="1"/>
 
+        <TextView android:id="@+id/change_mob_no"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:layout_margin="20dp"
+            android:text="Entered Invalid Details? Enter again."
+            android:gravity="center"
+            android:textSize="16dip"
+            android:layout_weight="1"/>
+
     </LinearLayout>
 </ScrollView>

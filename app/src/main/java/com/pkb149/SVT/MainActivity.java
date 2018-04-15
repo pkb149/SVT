@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.pkb149.SVT.utility.PrefManager;
 
@@ -40,6 +41,8 @@ import java.util.GregorianCalendar;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.entity.StringEntity;
 
 
 public class MainActivity extends ActionBarActivity implements
@@ -103,7 +106,7 @@ public class MainActivity extends ActionBarActivity implements
                 //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
                 progressDialog.show();
                 AsyncHttpClient client = new AsyncHttpClient();
-                String url="http://maps.googleapis.com/maps/api/directions/json?origin="+fromMaps[_from.getSelectedItemPosition()]+"&destination="+fromMaps[_to.getSelectedItemPosition()]+"&sensor=false";
+                final String url="http://maps.googleapis.com/maps/api/directions/json?origin="+fromMaps[_from.getSelectedItemPosition()]+"&destination="+fromMaps[_to.getSelectedItemPosition()]+"&sensor=false";
                 Log.e("URL:",url);
                 client.get(url, new JsonHttpResponseHandler() {
 
@@ -115,44 +118,93 @@ public class MainActivity extends ActionBarActivity implements
                     @Override
                     public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
                         Log.e("Response Body",response.toString());
-                        String distance="";
-                        String duration="";
-                        String distanceInMtr="";
-                        ArrayList<LatLng> listOfStep= new ArrayList<LatLng>();
-                        try {
-                            JSONObject legs= response.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0);
-                            distance=legs.getJSONObject("distance").getString("text");
-                            distanceInMtr=legs.getJSONObject("distance").getString("value");
-                            duration=legs.getJSONObject("duration").getString("text");
-                            JSONArray steps=legs.getJSONArray("steps");
-                            for (int i = 0; i < steps.length(); i++) {
-                                Double latitude=steps.getJSONObject(i).getJSONObject("start_location").getDouble("lat");
-                                Double longitude=steps.getJSONObject(i).getJSONObject("start_location").getDouble("lng");
-                                Log.e("latitude: ",latitude.toString());
-                                listOfStep.add(new LatLng(latitude,longitude));
+                        final JSONObject obj=response;
+                        final AsyncHttpClient search = new AsyncHttpClient(true,80,443);
+                        String search_url=getResources().getString(R.string.server_url)+"search/";
+                        Log.e("URL:",search_url);
+                        final JSONObject params = new JSONObject();
+                        try{
+                            params.put("source",fromMaps[_from.getSelectedItemPosition()]);
+                            params.put("destination",fromMaps[_to.getSelectedItemPosition()]);
+                            params.put("start_time",_pickTime.getText());
+                            params.put("capacity",_capacity.getSelectedItem().toString());
+
+                        } catch (Exception e){}
+                        StringEntity entity=null;
+                        try{
+                            entity = new StringEntity(params.toString());
+                        }
+                        catch (Exception e){
+                        }
+                        Log.e("sessionId", prefManager.getSessionId());
+                        search.addHeader("Authorization","Token "+prefManager.getSessionId());
+                        search.post(getApplicationContext(),search_url, entity, "application/json", new AsyncHttpResponseHandler() {
+                            @Override
+                            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                                progressDialog.dismiss();
+                                Log.e("Response Body",responseBody.toString());
+                                String distance="";
+                                String duration="";
+                                String distanceInMtr="";
+                                ArrayList<LatLng> listOfStep= new ArrayList<LatLng>();
+                                try {
+                                    JSONObject legs= obj.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0);
+                                    distance=legs.getJSONObject("distance").getString("text");
+                                    distanceInMtr=legs.getJSONObject("distance").getString("value");
+                                    duration=legs.getJSONObject("duration").getString("text");
+                                    JSONArray steps=legs.getJSONArray("steps");
+                                    for (int i = 0; i < steps.length(); i++) {
+                                        Double latitude=steps.getJSONObject(i).getJSONObject("start_location").getDouble("lat");
+                                        Double longitude=steps.getJSONObject(i).getJSONObject("start_location").getDouble("lng");
+                                        Log.e("latitude: ",latitude.toString());
+                                        listOfStep.add(new LatLng(latitude,longitude));
+                                    }
+                                    Log.e("Response Distance",distance);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                                //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+                                Intent intent = new Intent(getApplicationContext(), ChooseTruck.class);
+                                intent.putExtra("steps",listOfStep);
+                                intent.putExtra("distance",distance);
+                                intent.putExtra("duration",duration);
+                                intent.putExtra("distanceInMtr",distanceInMtr);
+                                intent.putExtra("from",_from.getSelectedItemPosition());
+                                intent.putExtra("to",_to.getSelectedItemPosition());
+                                intent.putExtra("time",parsedDate);
+                                intent.putExtra("capacity",_capacity.getSelectedItem().toString());
+                                if(listOfStep!=null&&listOfStep.size()!=0){
+                                    startActivity(intent);
+                                    overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);
+                                }
+                                else{
+                                    Toast.makeText(getApplicationContext(),"Couldn't load Data. Please try again",Toast.LENGTH_LONG).show();
+                                }
+                                String doc2=null;
+                                try{
+                                    doc2 = new String(responseBody, "UTF-8");
+                                }
+                                catch (Exception e){
+
+                                }
+                                Toast.makeText(getApplicationContext(),statusCode+"::::"+doc2,Toast.LENGTH_SHORT).show();
+                                progressDialog.dismiss();
                             }
-                            Log.e("Response Distance",distance);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        progressDialog.dismiss();
-                        //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-                        Intent intent = new Intent(getApplicationContext(), ChooseTruck.class);
-                        intent.putExtra("steps",listOfStep);
-                        intent.putExtra("distance",distance);
-                        intent.putExtra("duration",duration);
-                        intent.putExtra("distanceInMtr",distanceInMtr);
-                        intent.putExtra("from",_from.getSelectedItemPosition());
-                        intent.putExtra("to",_to.getSelectedItemPosition());
-                        intent.putExtra("time",parsedDate);
-                        intent.putExtra("capacity",_capacity.getSelectedItem().toString());
-                        if(listOfStep!=null&&listOfStep.size()!=0){
-                            startActivity(intent);
-                            overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);
-                        }
-                        else{
-                            Toast.makeText(getApplicationContext(),"Couldn't load Data. Please try again",Toast.LENGTH_LONG).show();
-                        }
+
+                            @Override
+                            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                                String doc2=null;
+                                try{
+                                    doc2 = new String(responseBody, "UTF-8");
+                                }
+                                catch (Exception e){
+
+                                }
+                                Toast.makeText(getApplicationContext(),statusCode+"::::"+doc2,Toast.LENGTH_SHORT).show();
+                                progressDialog.dismiss();
+                            }
+                        });
                     }
 
                     @Override
@@ -370,6 +422,7 @@ public class MainActivity extends ActionBarActivity implements
                         }
                         Calendar cal2 = Calendar.getInstance();
                         cal2.setTime(parsedDate);
+                        //cal2.getTimeInMillis();
                         Log.e("month",Integer.toString(parsedDate.getMonth()));
                         String time=String.format("%02d",cal2.get(Calendar.HOUR))+":"+String.format("%02d",parsedDate.getMinutes())+" "+amPm[cal2.get(Calendar.AM_PM)]+", "+String.format("%02d",parsedDate.getDate())+"-"+new DateFormatSymbols().getShortMonths()[parsedDate.getMonth()];
                         _pickTime.setText(time);

@@ -46,4 +46,9 @@ public class PrefManager {
 
     }
 
+    public String getSessionId(){
+        return pref.getString(isloggedIn,null).split("_")[1];
+
+    }
+
 }

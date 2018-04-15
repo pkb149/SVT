@@ -7,4 +7,5 @@
     <string name="action_driver">Update Driver Details</string>
     <string name="google_android_map_api_key">AIzaSyD4HjtABQWXvEfTdV6gwfQIKARccscM7Gs</string>
     <string name="sendotp_key">182547AyPIIazGn5a013451</string>
+    <string name="server_url">https://35.226.110.165/api/v0/</string>
 </resources>

@@ -1,5 +1,4 @@
 package com.pkb149.SVT;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
@@ -14,21 +13,21 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.katepratik.msg91api.MSG91;
-import com.pkb149.SVT.LorryOwnerFlow.FleetDetails;
-import com.pkb149.SVT.utility.PrefManager;
-
-import java.util.Random;
-
-import butterknife.ButterKnife;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import org.json.JSONObject;
 import butterknife.Bind;
+import butterknife.ButterKnife;
+import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.entity.StringEntity;
 
 
 public class SignupActivity extends AppCompatActivity  implements
         AdapterView.OnItemSelectedListener {
     private static final String TAG = "SignupActivity";
-    String[] userType = { "", "Lorry Owner", "Agent"};
+    String[] userType = { "", "Agent","Lorry Owner",};
+    String[] userTypeKey={"","agent","owner","merchant"};
     MSG91 msg91;
 
     @Bind(R.id.input_name) EditText _nameText;
@@ -44,7 +43,7 @@ public class SignupActivity extends AppCompatActivity  implements
         setContentView(R.layout.activity_signup);
         ButterKnife.bind(this);
         _userType.setOnItemSelectedListener(this);
-        msg91 = new MSG91(getString(R.string.sendotp_key));
+
 
         ArrayAdapter aa = new ArrayAdapter(this,android.R.layout.simple_spinner_item,userType);
         aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -78,34 +77,70 @@ public class SignupActivity extends AppCompatActivity  implements
             return;
         }
 
-        /*final ProgressDialog progressDialog = new ProgressDialog(SignupActivity.this,
+        final ProgressDialog progressDialog = new ProgressDialog(SignupActivity.this,
                 R.style.AppTheme_Dark_Dialog);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Sending OTP...");
-        progressDialog.show();*/
+        progressDialog.show();
+        final AsyncHttpClient client = new AsyncHttpClient(true,80,443);
+        client.addHeader("Content-Type", "application/json");
+        String restApiUrl=getResources().getString(R.string.server_url)+"register/";
 
-        String name = _nameText.getText().toString();
-        String mobile = _mobileText.getText().toString();
-        String password = _passwordText.getText().toString();
-        String reEnterPassword = _reEnterPasswordText.getText().toString();
-        String userTypes=_userType.getSelectedItem().toString();
-        char otp_char[]=OTP(4);
-        String otp= new String(otp_char);
-        Log.d(TAG,otp);
-        msg91.composeMessage("iPOOLA", "Your OTP is "+otp);
-        msg91.to(mobile);
-        String sendStatus = msg91.send();
-        Log.d(TAG, sendStatus);
-        Intent intent=new Intent(SignupActivity.this,EnterOTP.class);
-        intent.putExtra("name",name);
-        intent.putExtra("phone",mobile);
-        intent.putExtra("password",password);
-        intent.putExtra("userType",userTypes);
-        intent.putExtra("OTP",otp);
+        final String name = _nameText.getText().toString();
+        final String mobile = _mobileText.getText().toString();
+        final String password = _passwordText.getText().toString();
+        final String userType=userTypeKey[_userType.getSelectedItemPosition()];
 
-        //progressDialog.dismiss();
-        startActivity(intent);
 
+        final JSONObject params = new JSONObject();
+        try{
+            params.put("username", mobile);
+            params.put("first_name", name);
+            params.put("last_name", userType);
+            params.put("password", password);
+
+        } catch (Exception e){}
+        StringEntity entity=null;
+        try{
+            entity = new StringEntity(params.toString());
+        }
+        catch (Exception e){
+        }
+        client.post(getApplicationContext(), restApiUrl, entity, "application/json", new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                Intent intent=new Intent(SignupActivity.this,EnterOTP.class);
+                intent.putExtra("mobile",mobile);
+                intent.putExtra("first_name",name);
+                intent.putExtra("last_name",userType);
+                intent.putExtra("password",password);
+                startActivity(intent);
+                String doc2=null;
+                try{
+                    doc2 = new String(responseBody, "UTF-8");
+                }
+                catch (Exception e){
+
+                }
+                Log.d(TAG,statusCode+"::::"+doc2);
+                Toast.makeText(getApplicationContext(),statusCode+"::::"+doc2,Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                String doc2=null;
+                try{
+                    doc2 = new String(responseBody, "UTF-8");
+                }
+                catch (Exception e){
+
+                }
+                Log.d(TAG,statusCode+"::::"+doc2);
+                Toast.makeText(getApplicationContext(),statusCode+"::::"+doc2,Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
+            }
+        });
     }
 
 
@@ -175,46 +210,6 @@ public class SignupActivity extends AppCompatActivity  implements
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
-    }
-
-
-    static char[] OTP(int len)
-    {
-        // Using numeric values
-        String numbers = "0123456789";
-        // Using random method
-        Random rndm_method = new Random();
-        char[] otp = new char[len];
-        for (int i = 0; i < len; i++)
-        {
-            // Use of charAt() method : to get character value
-            // Use of nextInt() as it is scanning the value as int
-            otp[i] =
-                    numbers.charAt(rndm_method.nextInt(numbers.length()));
-        }
-        return otp;
-    }
-
-    void sendOTP(){
-        String name = _nameText.getText().toString();
-        String mobile = _mobileText.getText().toString();
-        String password = _passwordText.getText().toString();
-        String reEnterPassword = _reEnterPasswordText.getText().toString();
-        String userTypes=_userType.getSelectedItem().toString();
-        char otp_char[]=OTP(4);
-        String otp= new String(otp_char);
-        Log.d(TAG,otp);
-        msg91.composeMessage("iPOOLA", "Your OTP is "+otp);
-        msg91.to(mobile);
-        String sendStatus = msg91.send();
-        Log.d(TAG, sendStatus);
-        Intent intent=new Intent(SignupActivity.this,EnterOTP.class);
-        intent.putExtra("name",name);
-        intent.putExtra("phone",mobile);
-        intent.putExtra("password",password);
-        intent.putExtra("userType",userTypes);
-        intent.putExtra("OTP",otp);
-        startActivity(intent);
     }
 
 }

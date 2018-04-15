@@ -2,21 +2,33 @@ package com.pkb149.SVT;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Parcel;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.pkb149.SVT.utility.PrefManager;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.text.DateFormatSymbols;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import cz.msebera.android.httpclient.entity.StringEntity;
 
 public class MerchantDetailsForm extends AppCompatActivity {
     PrefManager prefManager;
@@ -25,6 +37,7 @@ public class MerchantDetailsForm extends AppCompatActivity {
     @Bind(R.id.drop_address_et) TextView _dropAddress;
     @Bind(R.id.merchant_name_et) TextView _merchantName;
     @Bind(R.id.merchant_mobile_number_et) TextView _merchantMobileNumber;
+    @Bind(R.id.loader_merchant) ProgressBar _loaderMerchant;
     ArrayList steps;
     String capacity;
     String time;
@@ -51,20 +64,68 @@ public class MerchantDetailsForm extends AppCompatActivity {
         _proceedToPayment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                _loaderMerchant.setVisibility(View.VISIBLE);
+                _loaderMerchant.bringToFront();
                 if (!validate()) {
                     Toast.makeText(getApplicationContext(),"One or more field has invalid Data", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                Intent intent = new Intent(getApplicationContext(), BookingConfirmation.class);
-                intent.putExtra("steps",steps);
-                intent.putExtra("distance",distance);
-                intent.putExtra("duration",duration);
-                intent.putExtra("from",fromLocation);
-                intent.putExtra("to",toLocation);
-                intent.putExtra("capacity",capacity);
-                intent.putExtra("time",date);
-                startActivity(intent);
-                overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);
+                AsyncHttpClient client = new AsyncHttpClient();
+                StringEntity entity=null;
+                final JSONObject params = new JSONObject();
+                String restApiUrl="http://192.168.1.10:2222/SVT/api/AgentAPI/addMerchant";
+                try{
+                    params.put("pickupAddress", _pickUpAddress.getText());
+                    params.put("dropAddress",_dropAddress.getText());
+                    params.put("merchantName",_merchantName.getText());
+                    params.put("mobNo",_merchantMobileNumber.getText());
+                }
+                catch (Exception e){
+
+                }
+                try{
+                    entity = new StringEntity(params.toString());
+                }
+                catch (Exception e){
+
+                }
+                client.post(getApplicationContext(), restApiUrl, entity, "application/json", new JsonHttpResponseHandler() {
+                    @Override
+                    public void onStart() {
+                        // called before request is started
+                    }
+                    @Override
+                    public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
+                        Log.e("Response Body",response.toString());
+                        Toast.makeText(getApplicationContext(),response.toString(),Toast.LENGTH_LONG).show();
+                        _loaderMerchant.setVisibility(View.INVISIBLE);
+                        Intent intent = new Intent(getApplicationContext(), BookingConfirmation.class);
+                        intent.putExtra("steps",steps);
+                        intent.putExtra("distance",distance);
+                        intent.putExtra("duration",duration);
+                        intent.putExtra("from",fromLocation);
+                        intent.putExtra("to",toLocation);
+                        intent.putExtra("capacity",capacity);
+                        intent.putExtra("time",date);
+                        startActivity(intent);
+                        overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, Throwable throwable, JSONObject jsonObject) {
+                        super.onFailure(statusCode, headers, throwable, jsonObject);
+                        Toast.makeText(getApplicationContext(),"couldn't load data, Please try again",Toast.LENGTH_LONG).show();
+                        _loaderMerchant.setVisibility(View.INVISIBLE);
+                        //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+                        Log.e("TAG","OnFailure!",throwable);
+                    }
+
+                    @Override
+                    public void onRetry(int retryNo) {
+                        // called when request is retried
+                    }
+                });
+
             }
         });
     }
